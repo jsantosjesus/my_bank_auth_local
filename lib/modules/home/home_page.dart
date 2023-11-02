@@ -14,10 +14,10 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         title: const Text('Biometria'),
       ),
-      body: Center(
+      body: const Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [const Text('Login efetuado com sucesso!')],
+          children: [Text('Login efetuado com sucesso!')],
         ),
       ),
     );

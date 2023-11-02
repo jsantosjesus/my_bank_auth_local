@@ -16,6 +16,8 @@ class LoginController {
     onUpdate();
   }
 
+  bool userNotFound = false;
+
   final VoidCallback onSuccessLogin;
   final VoidCallback onUpdate;
 
@@ -51,10 +53,26 @@ class LoginController {
 
   Future<bool> apiLogin(
       {required String email, required String password}) async {
-    final response = await FirebaseAuth.instance
-        .signInWithEmailAndPassword(email: email, password: password);
-    print(response);
-    return true;
+    bool response;
+    try {
+      await FirebaseAuth.instance
+          .signInWithEmailAndPassword(email: email, password: password);
+      response = true;
+      userNotFound = false;
+    } on FirebaseAuthException catch (e) {
+      emailCompleted = null;
+      passwordCompleted = null;
+      onUpdate();
+      print('Failed with error code: ${e.code}');
+      print(e.message);
+      if (e.code == "INVALID_LOGIN_CREDENTIALS") {
+        userNotFound = true;
+        onUpdate();
+      }
+      response = false;
+    }
+
+    return response;
   }
 
   //login with auth_local

@@ -31,6 +31,8 @@ class _LoginPageState extends State<LoginPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              if (controller.userNotFound)
+                const Text('Usuario ou senha invalidos!'),
               TextFormField(
                 validator: (value) => controller.validateEmail(value),
                 decoration: const InputDecoration(labelText: 'Email'),
