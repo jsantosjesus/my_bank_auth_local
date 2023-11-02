@@ -16,6 +16,12 @@ class _LoginPageState extends State<LoginPage> {
   });
 
   @override
+  void initState() {
+    super.initState();
+    controller.testDeviceSupported();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(
@@ -51,7 +57,24 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   child: const Text('Login',
                       style: TextStyle(color: Colors.white)),
+                ),
+              Container(height: 20.0),
+              if (controller.emailCompleted != null &&
+                  controller.passwordCompleted != null &&
+                  controller.supportState &&
+                  !controller.isLoading)
+                TextButton(
+                  onPressed: () {
+                    controller.authenticate();
+                  },
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all(Colors.blue),
+                  ),
+                  child: const Text('Login com biometria',
+                      style: TextStyle(color: Colors.white)),
                 )
+              else
+                Container(),
             ],
           ),
         ),
