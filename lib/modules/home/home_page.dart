@@ -31,7 +31,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Biometria'),
+        title: const Text('Biometria'),
       ),
       body: Center(
         child: Column(
@@ -42,7 +42,7 @@ class _HomePageState extends State<HomePage> {
                   backgroundColor: Colors.blue,
                   elevation: 15,
                   shadowColor: Colors.green),
-              child: Text(
+              child: const Text(
                 'Confirmar biometria no device',
                 style: TextStyle(
                   color: Colors.white,
@@ -58,7 +58,7 @@ class _HomePageState extends State<HomePage> {
                   backgroundColor: Colors.blue,
                   elevation: 15,
                   shadowColor: Colors.green),
-              child: Text(
+              child: const Text(
                 'Testar biometria',
                 style: TextStyle(
                   color: Colors.white,
@@ -79,8 +79,8 @@ class _HomePageState extends State<HomePage> {
       try {
         bool authenticated = await auth.authenticate(
             localizedReason: 'teste',
-            options:
-                AuthenticationOptions(stickyAuth: true, biometricOnly: false));
+            options: const AuthenticationOptions(
+                stickyAuth: true, biometricOnly: false));
         print("Autenticado: $authenticated");
       } on PlatformException catch (err) {
         print("errro: $err");
