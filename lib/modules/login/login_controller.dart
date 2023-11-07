@@ -1,7 +1,7 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:local_auth/local_auth.dart';
+import 'package:my_bank_auth_local/services/login_service.dart';
 
 class LoginController {
   String? email;
@@ -16,22 +16,23 @@ class LoginController {
     onUpdate();
   }
 
+  final service = LoginService();
+
   bool userNotFound = false;
 
   final VoidCallback onSuccessLogin;
   final VoidCallback onUpdate;
 
   LoginController({required this.onSuccessLogin(), required this.onUpdate});
+
+  //chamando login atraves do preenchimento de email e senha
   void login() async {
     print('conectando ao servidor');
     isLoading = true;
     emailCompleted = email;
     passwordCompleted = password;
-    bool response = await apiLogin(email: email!, password: password!);
+    await service.apiLogin(email: email!, password: password!);
     isLoading = false;
-    if (response) {
-      onSuccessLogin();
-    }
   }
 
   bool validate() {
@@ -44,6 +45,7 @@ class LoginController {
     }
   }
 
+//validando tamanho de email e senha antes de enviar para o usuario
   String? validateEmail(String? email) =>
       email != null && email.isNotEmpty ? null : 'O campo email é obrigatorio!';
   String? validatePassword(String? password) =>
@@ -51,46 +53,50 @@ class LoginController {
           ? null
           : 'A senha precisa ter pelo menos seis caracteres';
 
-  Future<bool> apiLogin(
-      {required String email, required String password}) async {
-    bool response;
-    try {
-      await FirebaseAuth.instance
-          .signInWithEmailAndPassword(email: email, password: password);
-      response = true;
-      userNotFound = false;
-    } on FirebaseAuthException catch (e) {
-      emailCompleted = null;
-      passwordCompleted = null;
-      onUpdate();
-      print('Failed with error code: ${e.code}');
-      print(e.message);
-      if (e.code == "INVALID_LOGIN_CREDENTIALS") {
-        userNotFound = true;
-        onUpdate();
-      }
-      response = false;
-    }
+  // Future<bool> apiLogin(
+  //     {required String email, required String password}) async {
+  //   bool response;
+  //   print('apiLogin');
+  //   try {
+  //     await FirebaseAuth.instance
+  //         .signInWithEmailAndPassword(email: email, password: password);
+  //     usuario = FirebaseAuth.instance.currentUser;
+  //     print(usuario);
+  //     response = true;
+  //     userNotFound = false;
+  //   } on FirebaseAuthException catch (e) {
+  //     emailCompleted = null;
+  //     passwordCompleted = null;
+  //     onUpdate();
+  //     print('erro: ${e.code}');
+  //     if (e.code == "INVALID_LOGIN_CREDENTIALS") {
+  //       userNotFound = true;
+  //       onUpdate();
+  //     }
+  //     response = false;
+  //   }
 
-    return response;
-  }
+  //   return response;
+  // }
 
-  //login with auth_local
+  //login com auth_local
   late final LocalAuthentication auth;
   bool supportState = false;
   bool erro = false;
 
+  //testando se o dispositivo suporta e está configurado biometria ou faceID
   testDeviceSupported() async {
     auth = LocalAuthentication();
     await auth.isDeviceSupported().then((bool isSupported) {
-      // setState(() {
       supportState = isSupported;
       onUpdate();
       print('suporta: $supportState');
-      // })
-    }).catchError((onError) => {print('erro: $onError')});
+    })
+        // .catchError((onError) => {})
+        ;
   }
 
+  //realizando autenticação com auth_local
   Future<void> authenticate() async {
     if (supportState) {
       try {
@@ -99,29 +105,16 @@ class LoginController {
             options: const AuthenticationOptions(
                 stickyAuth: true, biometricOnly: false));
         if (authenticated) {
-          bool response = await apiLogin(
+          await service.apiLogin(
               email: emailCompleted!, password: passwordCompleted!);
           isLoading = false;
-          if (response) {
-            onSuccessLogin();
-          }
         }
-        print("Autenticado: $authenticated");
+        // print("Autenticado: $authenticated");
       } on PlatformException catch (err) {
         print("errro: $err");
       }
     } else {
       print('esse device não suporta biometria ou faceId');
-    }
-  }
-
-  Future<void> getAvailableBiometrics() async {
-    if (supportState) {
-      List<BiometricType> availableBiometrics =
-          await auth.getAvailableBiometrics();
-      print("List of AvailableBiometrics : $availableBiometrics");
-    } else {
-      print('getbiometric: none');
     }
   }
 }
