@@ -1,13 +1,14 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:local_auth/local_auth.dart';
-import 'package:my_bank_auth_local/services/login_service.dart';
 
 class LoginController {
   String? email;
   String? password;
   String? emailCompleted;
   String? passwordCompleted;
+  User? usuario;
   final formKey = GlobalKey<FormState>();
   var _isLoading = false;
   bool get isLoading => _isLoading;
@@ -15,8 +16,6 @@ class LoginController {
     _isLoading = value;
     onUpdate();
   }
-
-  final service = LoginService();
 
   bool userNotFound = false;
 
@@ -31,7 +30,7 @@ class LoginController {
     isLoading = true;
     emailCompleted = email;
     passwordCompleted = password;
-    await service.apiLogin(email: email!, password: password!);
+    await apiLogin(email: email!, password: password!);
     isLoading = false;
   }
 
@@ -53,31 +52,31 @@ class LoginController {
           ? null
           : 'A senha precisa ter pelo menos seis caracteres';
 
-  // Future<bool> apiLogin(
-  //     {required String email, required String password}) async {
-  //   bool response;
-  //   print('apiLogin');
-  //   try {
-  //     await FirebaseAuth.instance
-  //         .signInWithEmailAndPassword(email: email, password: password);
-  //     usuario = FirebaseAuth.instance.currentUser;
-  //     print(usuario);
-  //     response = true;
-  //     userNotFound = false;
-  //   } on FirebaseAuthException catch (e) {
-  //     emailCompleted = null;
-  //     passwordCompleted = null;
-  //     onUpdate();
-  //     print('erro: ${e.code}');
-  //     if (e.code == "INVALID_LOGIN_CREDENTIALS") {
-  //       userNotFound = true;
-  //       onUpdate();
-  //     }
-  //     response = false;
-  //   }
+  Future<bool> apiLogin(
+      {required String email, required String password}) async {
+    bool response;
+    print('apiLogin');
+    try {
+      await FirebaseAuth.instance
+          .signInWithEmailAndPassword(email: email, password: password);
+      usuario = FirebaseAuth.instance.currentUser;
+      onSuccessLogin();
+      response = true;
+      userNotFound = false;
+    } on FirebaseAuthException catch (e) {
+      emailCompleted = null;
+      passwordCompleted = null;
+      onUpdate();
+      print('erro: ${e.code}');
+      if (e.code == "INVALID_LOGIN_CREDENTIALS") {
+        userNotFound = true;
+        onUpdate();
+      }
+      response = false;
+    }
 
-  //   return response;
-  // }
+    return response;
+  }
 
   //login com auth_local
   late final LocalAuthentication auth;
@@ -105,8 +104,7 @@ class LoginController {
             options: const AuthenticationOptions(
                 stickyAuth: true, biometricOnly: false));
         if (authenticated) {
-          await service.apiLogin(
-              email: emailCompleted!, password: passwordCompleted!);
+          await apiLogin(email: emailCompleted!, password: passwordCompleted!);
           isLoading = false;
         }
         // print("Autenticado: $authenticated");
