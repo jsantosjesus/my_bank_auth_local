@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:my_bank_auth_local/modules/home/home_page.dart';
-import 'package:my_bank_auth_local/modules/login/login_page.dart';
+import 'package:my_bank_auth_local/widgets/login_check.dart';
 
 class AppWidget extends StatelessWidget {
   const AppWidget({super.key});
@@ -13,11 +12,8 @@ class AppWidget extends StatelessWidget {
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      initialRoute: '/login',
-      routes: {
-        '/login': (context) => const LoginPage(),
-        '/': (context) => const HomePage()
-      },
+      initialRoute: '/',
+      routes: {'/': (context) => const LoginCheck()},
     );
   }
 }

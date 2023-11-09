@@ -9,9 +9,7 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  late final controller = LoginController(onSuccessLogin: () {
-    Navigator.pushNamed(context, '/');
-  }, onUpdate: () {
+  late final controller = LoginController(onUpdate: () {
     setState(() {});
   });
 
