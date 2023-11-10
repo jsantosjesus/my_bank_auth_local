@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:my_bank_auth_local/modules/login/login_service.dart';
 import 'package:my_bank_auth_local/widgets/login_check.dart';
 
 class AppWidget extends StatelessWidget {
-  const AppWidget({super.key});
+  AppWidget({super.key});
+
+  final LoginService _service = LoginService();
 
   @override
   Widget build(BuildContext context) {
@@ -12,8 +15,8 @@ class AppWidget extends StatelessWidget {
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      initialRoute: '/',
-      routes: {'/': (context) => const LoginCheck()},
+      initialRoute: '/login',
+      routes: {'/login': (context) => LoginCheck(service: _service)},
     );
   }
 }

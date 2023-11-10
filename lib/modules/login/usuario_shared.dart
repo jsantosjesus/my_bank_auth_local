@@ -5,10 +5,10 @@ class UsuarioShared {
   String? preUser;
 
   UsuarioShared() {
-    _startUsuario();
+    startUsuario();
   }
 
-  _startUsuario() async {
+  startUsuario() async {
     await _startPreferencies();
     await _readUsuario();
   }

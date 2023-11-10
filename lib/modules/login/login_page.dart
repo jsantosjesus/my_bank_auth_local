@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:my_bank_auth_local/modules/login/login_controller.dart';
+import 'package:my_bank_auth_local/modules/login/usuario_shared.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -9,6 +10,7 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  final userShared = UsuarioShared();
   late final controller = LoginController(onUpdate: () {
     setState(() {});
   });
@@ -17,6 +19,7 @@ class _LoginPageState extends State<LoginPage> {
   void initState() {
     super.initState();
     controller.testDeviceSupported();
+    userShared.startUsuario();
   }
 
   @override
@@ -59,13 +62,12 @@ class _LoginPageState extends State<LoginPage> {
                       style: TextStyle(color: Colors.white)),
                 ),
               Container(height: 20.0),
-              if (controller.emailCompleted != null &&
-                  controller.passwordCompleted != null &&
+              if (userShared.preUser != null &&
                   controller.supportState &&
                   !controller.isLoading)
                 TextButton(
                   onPressed: () {
-                    controller.authenticate();
+                    controller.authenticate(userShared.preUser);
                   },
                   style: ButtonStyle(
                     backgroundColor: MaterialStateProperty.all(Colors.blue),

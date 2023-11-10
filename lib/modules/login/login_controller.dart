@@ -98,7 +98,7 @@ class LoginController {
   }
 
   //realizando autenticação com auth_local
-  Future<void> authenticate() async {
+  Future<void> authenticate(preUser) async {
     if (supportState) {
       try {
         bool authenticated = await auth.authenticate(
@@ -106,8 +106,7 @@ class LoginController {
             options: const AuthenticationOptions(
                 stickyAuth: true, biometricOnly: false));
         if (authenticated) {
-          await service.apiLogin(
-              email: emailCompleted!, password: passwordCompleted!);
+          await service.authLogin(preUser);
           isLoading = false;
         }
         // print("Autenticado: $authenticated");
