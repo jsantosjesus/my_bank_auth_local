@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:my_bank_auth_local/modules/home/home_page.dart';
+import 'package:my_bank_auth_local/modules/login/login_page.dart';
 import 'package:my_bank_auth_local/modules/login/login_service.dart';
-import 'package:my_bank_auth_local/widgets/login_check.dart';
+// import 'package:my_bank_auth_local/widgets/login_check.dart';
 
 class AppWidget extends StatelessWidget {
   AppWidget({super.key});
@@ -16,7 +18,10 @@ class AppWidget extends StatelessWidget {
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       initialRoute: '/login',
-      routes: {'/login': (context) => LoginCheck(service: _service)},
+      routes: {
+        '/login': (context) => const LoginPage(),
+        '/': (context) => const HomePage()
+      },
     );
   }
 }

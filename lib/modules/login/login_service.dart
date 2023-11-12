@@ -28,4 +28,18 @@ class LoginService extends ChangeNotifier {
     notifyListeners();
     print(usuario);
   }
+
+  Future<void> apiSingup(
+      {required String email, required String password}) async {
+    try {
+      await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(email: email, password: password);
+      usuario = FirebaseAuth.instance.currentUser.toString();
+      shared.setUsuario(usuario.toString());
+      notifyListeners();
+      if (usuario != null) print(usuario);
+    } on FirebaseAuthException catch (e) {
+      print('erro: ${e.code}');
+    }
+  }
 }

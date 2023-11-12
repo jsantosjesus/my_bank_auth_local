@@ -13,6 +13,8 @@ class _LoginPageState extends State<LoginPage> {
   final userShared = UsuarioShared();
   late final controller = LoginController(onUpdate: () {
     setState(() {});
+  }, onSuccessLogin: () {
+    Navigator.pushNamed(context, '/');
   });
 
   @override
@@ -45,38 +47,63 @@ class _LoginPageState extends State<LoginPage> {
                 obscureText: true,
                 onSaved: (value) => controller.password = value!,
               ),
-              Container(height: 20.0),
+              Container(
+                height: 10,
+              ),
+              if (controller.isLogin) const Text('Ainda não tem conta?'),
+              if (controller.isLogin)
+                TextButton(
+                    onPressed: () {
+                      controller.alterLoginForSingup();
+                      setState(() {});
+                    },
+                    child: const Text('cadastre-se')),
+              if (!controller.isLogin) const Text('Já tem conta?'),
+              if (!controller.isLogin)
+                TextButton(
+                    onPressed: () {
+                      controller.alterLoginForSingup();
+                      setState(() {});
+                    },
+                    child: const Text('Faça login')),
+              Container(height: 15),
               if (controller.isLoading)
                 const CircularProgressIndicator()
               else
-                TextButton(
-                  onPressed: () {
-                    if (controller.validate()) {
-                      controller.login();
-                    }
-                  },
-                  style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all(Colors.blue),
+                SizedBox(
+                  width: 300,
+                  child: TextButton(
+                    onPressed: () {
+                      if (controller.validate()) {
+                        controller.login();
+                        // setState(() {});
+                      }
+                    },
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all(Colors.blue),
+                    ),
+                    child: const Text('Entrar',
+                        style: TextStyle(color: Colors.white)),
                   ),
-                  child: const Text('Login',
-                      style: TextStyle(color: Colors.white)),
                 ),
               Container(height: 20.0),
               if (userShared.preUser != null &&
                   controller.supportState &&
-                  !controller.isLoading)
-                TextButton(
-                  onPressed: () {
-                    controller.authenticate(userShared.preUser);
-                  },
-                  style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all(Colors.blue),
+                  !controller.isLoading &&
+                  controller.isLogin)
+                SizedBox(
+                  width: 300,
+                  child: OutlinedButton(
+                    onPressed: () {
+                      controller.authenticate(userShared.preUser);
+                    },
+                    style: OutlinedButton.styleFrom(
+                      side: const BorderSide(width: 2.0, color: Colors.blue),
+                    ),
+                    child: const Text('Login com biometria',
+                        style: TextStyle(color: Colors.blue)),
                   ),
-                  child: const Text('Login com biometria',
-                      style: TextStyle(color: Colors.white)),
                 )
-              else
-                Container(),
             ],
           ),
         ),

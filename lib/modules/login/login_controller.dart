@@ -7,8 +7,6 @@ import 'package:my_bank_auth_local/modules/login/login_service.dart';
 class LoginController {
   String? email;
   String? password;
-  String? emailCompleted;
-  String? passwordCompleted;
   User? usuario;
   final formKey = GlobalKey<FormState>();
   var _isLoading = false;
@@ -18,21 +16,45 @@ class LoginController {
     onUpdate();
   }
 
+  var _isLogin = true;
+  bool get isLogin => _isLogin;
+  set isLogin(bool value) {
+    _isLogin = value;
+    onUpdate();
+  }
+
   final service = LoginService();
 
   bool userNotFound = false;
 
   final VoidCallback onUpdate;
+  final VoidCallback onSuccessLogin;
 
-  LoginController({required this.onUpdate});
+  LoginController({required this.onUpdate, required this.onSuccessLogin});
+
+  alterLoginForSingup() {
+    if (_isLogin) {
+      _isLogin = false;
+    } else {
+      _isLogin = true;
+    }
+  }
 
   //chamando login atraves do preenchimento de email e senha
   void login() async {
     print('conectando ao servidor');
     isLoading = true;
-    emailCompleted = email;
-    passwordCompleted = password;
-    await service.apiLogin(email: email!, password: password!);
+    if (isLogin) {
+      await service.apiLogin(email: email!, password: password!);
+      if (service.usuario != null) {
+        onSuccessLogin();
+      }
+    } else {
+      await service.apiSingup(email: email!, password: password!);
+      if (service.usuario != null) {
+        onSuccessLogin();
+      }
+    }
     isLoading = false;
   }
 
@@ -107,6 +129,9 @@ class LoginController {
                 stickyAuth: true, biometricOnly: false));
         if (authenticated) {
           await service.authLogin(preUser);
+          if (service.usuario != null) {
+            onSuccessLogin();
+          }
           isLoading = false;
         }
         // print("Autenticado: $authenticated");
